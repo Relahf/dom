@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartment Hub - Регистрация</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/theme.js"></script>
+</head>
+<body class="light-theme">
+    <header>
+        <div class="container">
+            <h1>🏢 Apartment Hub</h1>
+            <button id="theme-toggle" onclick="toggleTheme()" class="btn btn-small" style="background: rgba(255,255,255,0.2); color: white; position: absolute; right: 20px; top: 20px;"></button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card" style="max-width: 400px; margin: 50px auto;">
+            <div class="card-header">
+                <h2>Регистрация</h2>
+            </div>
+
+            <form onsubmit="event.preventDefault(); window.hub.register(document.getElementById('username').value, document.getElementById('password').value, document.getElementById('apartment').value);">
+                <div class="form-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" required minlength="3">
+                </div>
+
+                <div class="form-group">
+                    <label for="apartment">Квартира:</label>
+                    <input type="text" id="apartment" name="apartment" placeholder="Например: 42" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px;">
+                Уже есть аккаунт? <a href="/auth/login">Войти</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
