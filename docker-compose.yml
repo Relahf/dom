@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dom_app
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/app/app
+      - app_data:/app/data
+      - uploads:/uploads
+      - backups:/backups
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-me-to-random-string}
+      - DEBUG=${DEBUG:-false}
+      - APP_TITLE=${APP_TITLE:-Apartment Hub}
+      - OLLAMA_API_URL=${OLLAMA_API_URL:-http://ollama:11434}
+      - LLM_MODEL_NAME=${LLM_MODEL_NAME:-tinyllama}
+      - LLM_DAILY_LIMIT=${LLM_DAILY_LIMIT:-10}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-60}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-100}
+      - MAX_STORAGE_MB=${MAX_STORAGE_MB:-5000}
+      - AUTO_DELETE_MESSAGES_DAYS=${AUTO_DELETE_MESSAGES_DAYS:-90}
+      - UPLOAD_DIR=${UPLOAD_DIR:-/uploads}
+      - BACKUP_DIR=${BACKUP_DIR:-/backups}
+      - DATABASE_PATH=${DATABASE_PATH:-/app/data/apartment_hub.db}
+      - NUT_HOST=${NUT_HOST:-}
+      - NUT_PORT=${NUT_PORT:-3493}
+      - NUT_USERNAME=${NUT_USERNAME:-}
+      - NUT_PASSWORD=${NUT_PASSWORD:-}
+      - NUT_UPS_NAME=${NUT_UPS_NAME:-}
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - apartment_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: dom_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    restart: unless-stopped
+    networks:
+      - apartment_network
+
+  dnsmasq:
+    image: andyshinn/dnsmasq:latest
+    container_name: dom_dnsmasq
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - apartment_network
+
+volumes:
+  app_data:
+  uploads:
+  backups:
+  ollama_models:
+
+networks:
+  apartment_network:
+    driver: bridge
